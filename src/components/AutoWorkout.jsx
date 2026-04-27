@@ -370,6 +370,100 @@ function DonePhase({ elapsedSecs, onMarkComplete, onRestart }) {
   );
 }
 
+// ─── Phase 1.5: Preparation ──────────────────────────────────────────────────
+
+function PrepPhase({ exercises, rowingSecs, intervalOpt, onBack, onStart }) {
+  const rowingMins = Math.round(rowingSecs / 60);
+
+  return (
+    <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+      {/* Title */}
+      <div>
+        <p style={{
+          color: '#444', fontSize: '11px', fontWeight: '700',
+          letterSpacing: '2.5px', textTransform: 'uppercase', marginBottom: '6px',
+        }}>
+          Forberedelse
+        </p>
+        <h2 style={{
+          color: '#fff', fontSize: '22px', fontWeight: '900',
+          letterSpacing: '2px', fontFamily: "'Bebas Neue', sans-serif",
+        }}>
+          DAGENS ØVELSER
+        </h2>
+      </div>
+
+      {/* Exercise list */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
+        {/* Rowing warmup */}
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '12px',
+          padding: '12px 14px', borderRadius: '12px',
+          background: '#00d4ff0c', border: '1px solid #00d4ff22',
+        }}>
+          <span style={{ fontSize: '20px', lineHeight: 1, flexShrink: 0 }}>🚣</span>
+          <p style={{ flex: 1, color: '#aaa', fontSize: '15px', fontWeight: '600', margin: 0 }}>
+            Oppvarming – romaskin
+          </p>
+          <span style={{
+            color: '#00d4ff', fontSize: '13px', fontWeight: '700',
+            flexShrink: 0, fontFamily: 'monospace',
+          }}>
+            {rowingMins} min
+          </span>
+        </div>
+
+        {/* Strength exercises */}
+        {exercises.map((ex, i) => (
+          <div key={i} style={{
+            display: 'flex', alignItems: 'center', gap: '12px',
+            padding: '12px 14px', borderRadius: '12px',
+            background: '#111', border: '1px solid #1e1e1e',
+          }}>
+            <span style={{
+              color: '#333', fontSize: '12px', fontWeight: '700',
+              width: '18px', textAlign: 'right', flexShrink: 0,
+              fontFamily: 'monospace',
+            }}>
+              {i + 1}
+            </span>
+            <span style={{ fontSize: '22px', lineHeight: 1, flexShrink: 0 }}>{ex.emoji}</span>
+            <p style={{ flex: 1, color: '#ccc', fontSize: '15px', fontWeight: '600', margin: 0 }}>
+              {ex.name}
+            </p>
+            <span style={{
+              color: '#e8ff00', fontSize: '13px', fontWeight: '700',
+              flexShrink: 0, fontFamily: 'monospace',
+            }}>
+              {intervalOpt.work} sek
+            </span>
+          </div>
+        ))}
+      </div>
+
+      {/* Buttons */}
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <button onClick={onBack} style={{
+          flex: 1, padding: '16px', borderRadius: '12px',
+          border: '2px solid #222', background: 'transparent',
+          color: '#555', fontSize: '14px', fontWeight: '600', cursor: 'pointer',
+        }}>
+          ← Endre oppsett
+        </button>
+        <button onClick={onStart} style={{
+          flex: 2, padding: '16px', borderRadius: '12px', border: 'none',
+          background: 'linear-gradient(135deg, #e8ff00, #c8df00)',
+          color: '#000', fontSize: '16px', fontWeight: '900',
+          letterSpacing: '1px', cursor: 'pointer',
+          boxShadow: '0 0 30px #e8ff0033',
+        }}>
+          START NÅ →
+        </button>
+      </div>
+    </div>
+  );
+}
+
 // ─── AutoWorkout ──────────────────────────────────────────────────────────────
 
 export default function AutoWorkout({ markDayComplete }) {
@@ -383,7 +477,11 @@ export default function AutoWorkout({ markDayComplete }) {
   const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
   const workout = getDayWorkout(today);
 
-  const handleStart = useCallback(() => {
+  const handleStart = useCallback(() => setPhase('prep'), []);
+
+  const handlePrepBack = useCallback(() => setPhase('setup'), []);
+
+  const handlePrepStart = useCallback(() => {
     startRef.current = Date.now();
     setPhase('rowing');
   }, []);
@@ -424,6 +522,15 @@ export default function AutoWorkout({ markDayComplete }) {
           intervalOpt={intervalOpt}
           setIntervalOpt={setIntervalOpt}
           onStart={handleStart}
+        />
+      )}
+      {phase === 'prep' && (
+        <PrepPhase
+          exercises={workout.exercises}
+          rowingSecs={rowingSecs}
+          intervalOpt={intervalOpt}
+          onBack={handlePrepBack}
+          onStart={handlePrepStart}
         />
       )}
       {phase === 'rowing' && (
