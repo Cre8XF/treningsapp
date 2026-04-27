@@ -93,11 +93,27 @@ const INTERVAL_OPTS = [
   { label: '40 sek på / 20 sek av', work: 40, rest: 20 },
 ];
 
+const ROUNDS_OPTS = [1, 2, 3, 4];
+const ROUND_BREAK_SECS = 60;
+
+function estimatedSecs(rowingSecs, intervalOpt, rounds, numExercises) {
+  const perRound = numExercises * intervalOpt.work + (numExercises - 1) * intervalOpt.rest;
+  return rowingSecs + rounds * perRound + (rounds - 1) * ROUND_BREAK_SECS;
+}
+
+function fmtDuration(secs) {
+  const m = Math.floor(secs / 60);
+  const s = secs % 60;
+  return s === 0 ? `${m} min` : `${m} min ${s} sek`;
+}
+
 // ─── Phase 1: Setup ───────────────────────────────────────────────────────────
 
-function SetupPhase({ rowingSecs, setRowingSecs, intervalOpt, setIntervalOpt, onStart }) {
+function SetupPhase({ rowingSecs, setRowingSecs, intervalOpt, setIntervalOpt, rounds, setRounds, numExercises, onStart }) {
+  const est = estimatedSecs(rowingSecs, intervalOpt, rounds, numExercises);
+
   return (
-    <div style={{ padding: '28px 20px', display: 'flex', flexDirection: 'column', gap: '32px' }}>
+    <div style={{ padding: '28px 20px', display: 'flex', flexDirection: 'column', gap: '28px' }}>
       {/* Rowing time */}
       <div>
         <p style={{
@@ -119,6 +135,33 @@ function SetupPhase({ rowingSecs, setRowingSecs, intervalOpt, setIntervalOpt, on
                 transition: 'all 0.15s',
               }}>
                 {o.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Rounds */}
+      <div>
+        <p style={{
+          color: '#555', fontSize: '11px', fontWeight: '700',
+          letterSpacing: '2.5px', textTransform: 'uppercase', marginBottom: '12px',
+        }}>
+          Antall runder
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px' }}>
+          {ROUNDS_OPTS.map((r) => {
+            const on = rounds === r;
+            return (
+              <button key={r} onClick={() => setRounds(r)} style={{
+                padding: '14px 0', borderRadius: '10px',
+                border: `2px solid ${on ? '#a855f7' : '#1e1e1e'}`,
+                background: on ? '#a855f715' : '#111',
+                color: on ? '#a855f7' : '#444',
+                fontSize: '14px', fontWeight: '700', cursor: 'pointer',
+                transition: 'all 0.15s',
+              }}>
+                {r}×
               </button>
             );
           })}
@@ -150,6 +193,18 @@ function SetupPhase({ rowingSecs, setRowingSecs, intervalOpt, setIntervalOpt, on
             );
           })}
         </div>
+      </div>
+
+      {/* Estimated time */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        padding: '12px 16px', borderRadius: '10px',
+        background: '#111', border: '1px solid #1e1e1e',
+      }}>
+        <span style={{ color: '#444', fontSize: '13px' }}>Estimert total tid</span>
+        <span style={{ color: '#e8ff00', fontSize: '15px', fontWeight: '700', fontFamily: 'monospace' }}>
+          ~{fmtDuration(est)}
+        </span>
       </div>
 
       {/* Start */}
@@ -209,7 +264,7 @@ function RowingPhase({ rowingSecs, onDone }) {
 
 // ─── Phase 3: Strength ────────────────────────────────────────────────────────
 
-function StrengthPhase({ exercises, intervalOpt, onDone }) {
+function StrengthPhase({ exercises, intervalOpt, currentRound, totalRounds, onDone }) {
   const [exIdx, setExIdx] = useState(0);
   const [subPhase, setSubPhase] = useState('work');
   const [timeLeft, setTimeLeft] = useState(intervalOpt.work);
@@ -256,10 +311,11 @@ function StrengthPhase({ exercises, intervalOpt, onDone }) {
         justifyContent: 'space-between', alignItems: 'center',
       }}>
         <span style={{
-          color: '#444', fontSize: '12px', fontWeight: '700',
+          color: '#a855f7', fontSize: '13px', fontWeight: '800',
           letterSpacing: '2px', textTransform: 'uppercase',
+          textShadow: '0 0 10px #a855f766',
         }}>
-          💪 Styrke
+          RUNDE {currentRound} AV {totalRounds}
         </span>
         <span style={{ color: '#555', fontSize: '13px', fontWeight: '700' }}>
           Øvelse {exIdx + 1} av {exercises.length}
@@ -306,6 +362,45 @@ function StrengthPhase({ exercises, intervalOpt, onDone }) {
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+// ─── Phase 3.5: Round break ───────────────────────────────────────────────────
+
+function RoundBreakPhase({ completedRound, totalRounds, onDone }) {
+  const [timeLeft, setTimeLeft] = useState(ROUND_BREAK_SECS);
+
+  useEffect(() => {
+    if (timeLeft <= 0) { onDone(); return; }
+    const id = setTimeout(() => setTimeLeft((t) => t - 1), 1000);
+    return () => clearTimeout(id);
+  }, [timeLeft, onDone]);
+
+  return (
+    <div style={{
+      display: 'flex', flexDirection: 'column', alignItems: 'center',
+      justifyContent: 'center', padding: '40px 20px', gap: '20px',
+    }}>
+      <div style={{ textAlign: 'center' }}>
+        <div style={{ fontSize: '52px', lineHeight: 1 }}>🏅</div>
+        <h2 style={{
+          color: '#4ade80', fontSize: '22px', fontWeight: '800',
+          letterSpacing: '1px', margin: '12px 0 6px',
+        }}>
+          Runde {completedRound} av {totalRounds} ferdig!
+        </h2>
+        <p style={{ color: '#444', fontSize: '14px' }}>
+          Hvil deg – neste runde starter snart
+        </p>
+      </div>
+      <CircleTimer timeLeft={timeLeft} totalTime={ROUND_BREAK_SECS} color="#4ade80" />
+      <p style={{ color: '#444', fontSize: '14px' }}>
+        Runde{' '}
+        <span style={{ color: '#a855f7', fontWeight: '700' }}>{completedRound + 1}</span>
+        {' '}av {totalRounds} starter om{' '}
+        <span style={{ fontFamily: 'monospace' }}>{timeLeft}</span> sek
+      </p>
     </div>
   );
 }
@@ -372,8 +467,10 @@ function DonePhase({ elapsedSecs, onMarkComplete, onRestart }) {
 
 // ─── Phase 1.5: Preparation ──────────────────────────────────────────────────
 
-function PrepPhase({ exercises, rowingSecs, intervalOpt, onBack, onStart }) {
+function PrepPhase({ exercises, rowingSecs, intervalOpt, rounds, onBack, onStart }) {
   const rowingMins = Math.round(rowingSecs / 60);
+  const strengthSecs = rounds * (exercises.length * intervalOpt.work + (exercises.length - 1) * intervalOpt.rest)
+    + (rounds - 1) * ROUND_BREAK_SECS;
 
   return (
     <div style={{ padding: '24px 20px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
@@ -391,6 +488,12 @@ function PrepPhase({ exercises, rowingSecs, intervalOpt, onBack, onStart }) {
         }}>
           DAGENS ØVELSER
         </h2>
+        <p style={{ color: '#555', fontSize: '13px', marginTop: '5px' }}>
+          <span style={{ color: '#a855f7', fontWeight: '700' }}>{rounds} runder</span>
+          {' × '}
+          <span style={{ color: '#888' }}>{exercises.length} øvelser</span>
+          <span style={{ color: '#333', marginLeft: '8px' }}>· ~{fmtDuration(strengthSecs)} styrke</span>
+        </p>
       </div>
 
       {/* Exercise list */}
@@ -433,9 +536,9 @@ function PrepPhase({ exercises, rowingSecs, intervalOpt, onBack, onStart }) {
             </p>
             <span style={{
               color: '#e8ff00', fontSize: '13px', fontWeight: '700',
-              flexShrink: 0, fontFamily: 'monospace',
+              flexShrink: 0, fontFamily: 'monospace', whiteSpace: 'nowrap',
             }}>
-              {intervalOpt.work} sek
+              {intervalOpt.work} sek × {rounds}
             </span>
           </div>
         ))}
@@ -470,6 +573,8 @@ export default function AutoWorkout({ markDayComplete }) {
   const [phase, setPhase] = useState('setup');
   const [rowingSecs, setRowingSecs] = useState(10 * 60);
   const [intervalOpt, setIntervalOpt] = useState(INTERVAL_OPTS[1]);
+  const [rounds, setRounds] = useState(3);
+  const [currentRound, setCurrentRound] = useState(1);
   const [elapsedSecs, setElapsedSecs] = useState(0);
   const startRef = useRef(null);
 
@@ -489,15 +594,26 @@ export default function AutoWorkout({ markDayComplete }) {
   const handleRowingDone = useCallback(() => setPhase('strength'), []);
 
   const handleStrengthDone = useCallback(() => {
-    setElapsedSecs(Math.floor((Date.now() - startRef.current) / 1000));
-    setPhase('done');
+    if (currentRound < rounds) {
+      setCurrentRound((r) => r + 1);
+      setPhase('round-break');
+    } else {
+      setElapsedSecs(Math.floor((Date.now() - startRef.current) / 1000));
+      setPhase('done');
+    }
+  }, [currentRound, rounds]);
+
+  const handleRoundBreakDone = useCallback(() => {
+    playBeep(880, 200);
+    vibrate([400]);
+    setPhase('strength');
   }, []);
 
   const handleMarkComplete = useCallback(() => {
     markDayComplete(todayStr);
   }, [markDayComplete, todayStr]);
 
-  const handleRestart = useCallback(() => setPhase('setup'), []);
+  const handleRestart = useCallback(() => { setCurrentRound(1); setPhase('setup'); }, []);
 
   if (workout.rest) {
     return (
@@ -521,6 +637,9 @@ export default function AutoWorkout({ markDayComplete }) {
           setRowingSecs={setRowingSecs}
           intervalOpt={intervalOpt}
           setIntervalOpt={setIntervalOpt}
+          rounds={rounds}
+          setRounds={setRounds}
+          numExercises={workout.exercises.length}
           onStart={handleStart}
         />
       )}
@@ -529,6 +648,7 @@ export default function AutoWorkout({ markDayComplete }) {
           exercises={workout.exercises}
           rowingSecs={rowingSecs}
           intervalOpt={intervalOpt}
+          rounds={rounds}
           onBack={handlePrepBack}
           onStart={handlePrepStart}
         />
@@ -538,9 +658,19 @@ export default function AutoWorkout({ markDayComplete }) {
       )}
       {phase === 'strength' && (
         <StrengthPhase
+          key={currentRound}
           exercises={workout.exercises}
           intervalOpt={intervalOpt}
+          currentRound={currentRound}
+          totalRounds={rounds}
           onDone={handleStrengthDone}
+        />
+      )}
+      {phase === 'round-break' && (
+        <RoundBreakPhase
+          completedRound={currentRound - 1}
+          totalRounds={rounds}
+          onDone={handleRoundBreakDone}
         />
       )}
       {phase === 'done' && (
