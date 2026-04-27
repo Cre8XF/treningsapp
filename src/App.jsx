@@ -1,14 +1,9 @@
 import { useState } from 'react';
 import { CalendarDays, Dumbbell, Timer } from 'lucide-react';
 import { useWorkoutProgress } from './hooks/useWorkoutProgress';
-import { getDayWorkout } from './data/workouts';
 import CalendarView from './components/Calendar';
-import WorkoutSession from './components/WorkoutSession';
+import AutoWorkout from './components/AutoWorkout';
 import RowingTimer from './components/RowingTimer';
-
-function toDateStr(date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-}
 
 const TABS = [
   { id: 'calendar', label: 'Kalender', Icon: CalendarDays },
@@ -91,54 +86,6 @@ function BottomNav({ active, onChange }) {
   );
 }
 
-// ─── Trening tab ─────────────────────────────────────────────────────────────
-
-function WorkoutTab({ todayStr, todayWorkout, todayProgress, toggleExercise, markDayComplete }) {
-  const [timerOpen, setTimerOpen] = useState(false);
-
-  return (
-    <div>
-      {/* Collapsible rowing timer */}
-      <div style={{ borderBottom: '1px solid #1a1a1a' }}>
-        <button
-          onClick={() => setTimerOpen((o) => !o)}
-          className="w-full flex items-center justify-between px-4 py-3 transition-colors active:bg-white/5"
-          style={{ background: '#111' }}
-        >
-          <div className="flex items-center gap-2">
-            <span>🚣</span>
-            <span className="text-sm font-semibold" style={{ color: '#666' }}>
-              Oppvarming – romaskin
-            </span>
-          </div>
-          <span className="text-[11px]" style={{ color: '#444' }}>
-            {timerOpen ? '▲ skjul' : '▼ åpne timer'}
-          </span>
-        </button>
-
-        <div
-          style={{
-            maxHeight: timerOpen ? '600px' : '0px',
-            overflow: 'hidden',
-            transition: 'max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-          }}
-        >
-          <RowingTimer standalone={false} />
-        </div>
-      </div>
-
-      {/* Today's workout session */}
-      <WorkoutSession
-        date={todayStr}
-        workout={todayWorkout}
-        progress={todayProgress}
-        onToggleExercise={(i) => toggleExercise(todayStr, i)}
-        onComplete={() => markDayComplete(todayStr)}
-      />
-    </div>
-  );
-}
-
 // ─── App ─────────────────────────────────────────────────────────────────────
 
 export default function App() {
@@ -152,12 +99,7 @@ export default function App() {
     getMonthStats,
   } = useWorkoutProgress();
 
-  const today        = new Date();
-  const todayStr     = toDateStr(today);
-  const todayWorkout = getDayWorkout(today);
-  const todayProgress = getExerciseStates(todayStr);
-
-  const progressProps = { isDayComplete, toggleExercise, markDayComplete, getExerciseStates, getMonthStats };
+  const calendarProps = { isDayComplete, toggleExercise, markDayComplete, getExerciseStates, getMonthStats };
 
   return (
     <>
@@ -165,17 +107,11 @@ export default function App() {
 
       <main className="flex-1 overflow-y-auto" style={{ background: '#0f0f0f' }}>
         {activeTab === 'calendar' && (
-          <CalendarView {...progressProps} />
+          <CalendarView {...calendarProps} />
         )}
 
         {activeTab === 'workout' && (
-          <WorkoutTab
-            todayStr={todayStr}
-            todayWorkout={todayWorkout}
-            todayProgress={todayProgress}
-            toggleExercise={toggleExercise}
-            markDayComplete={markDayComplete}
-          />
+          <AutoWorkout markDayComplete={markDayComplete} />
         )}
 
         {activeTab === 'timer' && <RowingTimer />}
