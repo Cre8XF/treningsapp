@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { CalendarDays, Dumbbell, Timer } from 'lucide-react';
 import { useWorkoutProgress } from './hooks/useWorkoutProgress';
 import CalendarView from './components/Calendar';
-import AutoWorkout from './components/AutoWorkout';
+import HomeScreen from './components/HomeScreen';
 import RowingTimer from './components/RowingTimer';
 
 const TABS = [
@@ -111,7 +111,7 @@ export default function App() {
         )}
 
         {activeTab === 'workout' && (
-          <AutoWorkout markDayComplete={markDayComplete} />
+          <HomeScreen markDayComplete={markDayComplete} />
         )}
 
         {activeTab === 'timer' && <RowingTimer />}
