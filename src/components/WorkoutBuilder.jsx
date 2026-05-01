@@ -29,6 +29,7 @@ const CATEGORIES = [
   { id: 'overkropp', label: 'Overkropp' },
   { id: 'helkropp', label: 'Helkropp' },
   { id: 'sete', label: 'Sete' },
+  { id: 'rygg', label: 'Rygg' },
 ];
 
 const BETWEEN_ROUNDS_REST_SEC = 30;
@@ -520,6 +521,23 @@ function Step3Preview({ config, selectedIds, onBack, onStart }) {
           </div>
         </div>
       </div>
+
+      {/* Warning banner */}
+      {config.warning && (
+        <div style={{
+          margin: '12px 16px 0',
+          padding: '12px 14px',
+          borderRadius: '12px',
+          border: '1.5px solid #f97316',
+          background: '#f9731612',
+          color: '#f97316',
+          fontSize: '13px',
+          fontWeight: 600,
+          lineHeight: 1.4,
+        }}>
+          {config.warning}
+        </div>
+      )}
 
       {/* Sequence list */}
       <div style={{ padding: '12px 16px 4px', display: 'flex', flexDirection: 'column', gap: '6px' }}>

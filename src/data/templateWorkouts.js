@@ -85,6 +85,29 @@ const templateWorkouts = [
       'squat_jump_rotation',
     ],
   },
+  {
+    id: 'template_ryggrehab',
+    name: 'Ryggrehab 🩺',
+    emoji: '🩺',
+    description: 'Skånsom rygg- og coreøkt – rolige øvelser for sår rygg',
+    settings: {
+      warmup: 'none',
+      warmupTime: 5,
+      interval: '40/20',
+      rounds: 2,
+      warning: '⚠️ Skånsom økt for sår rygg. Stopp hvis du kjenner smerter.',
+    },
+    exercises: [
+      'cat-cow',
+      'child-pose',
+      'pelvic-tilt',
+      'knees-to-chest',
+      'dead-bug',
+      'bird-dog',
+      'glute-bridge',
+      'side-plank',
+    ],
+  },
 ];
 
 export default templateWorkouts;
