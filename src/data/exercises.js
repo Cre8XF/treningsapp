@@ -360,6 +360,72 @@ const exercises = [
     difficulty: 1,
     description: "Ligg på siden med knærne bøyd og åpne det øvre kneet oppover som en musling uten å bevege hoften.",
   },
+
+  // RYGG
+  {
+    id: "cat-cow",
+    name: "Cat-Cow",
+    emoji: "🐱",
+    category: "rygg",
+    difficulty: 1,
+    description: "På alle fire, veksle mellom å hvelve og senke ryggen sakte",
+  },
+  {
+    id: "child-pose",
+    name: "Child's Pose",
+    emoji: "🧘",
+    category: "rygg",
+    difficulty: 1,
+    description: "Strekk armene fremover på gulvet, hold posisjonen",
+  },
+  {
+    id: "knees-to-chest",
+    name: "Knær til bryst",
+    emoji: "🤸",
+    category: "rygg",
+    difficulty: 1,
+    description: "Ligg på ryggen, trekk begge knær inn mot brystet",
+  },
+  {
+    id: "pelvic-tilt",
+    name: "Pelvic Tilt",
+    emoji: "↔️",
+    category: "rygg",
+    difficulty: 1,
+    description: "Ligg på ryggen med bøyde knær, press korsryggen ned mot gulvet",
+  },
+  {
+    id: "dead-bug",
+    name: "Dead Bug",
+    emoji: "🐛",
+    category: "core",
+    difficulty: 1,
+    description: "Ligg på ryggen, strekk motsatt arm og bein ut sakte og kontrollert",
+  },
+  {
+    id: "bird-dog",
+    name: "Bird Dog",
+    emoji: "🐦",
+    category: "rygg",
+    difficulty: 1,
+    description: "På alle fire, strekk motsatt arm og bein, hold balansen",
+  },
+  {
+    id: "side-plank",
+    name: "Side Plank",
+    emoji: "💪",
+    category: "core",
+    difficulty: 2,
+    description: "Støtt på underarm og siden av foten, hold kroppen rett",
+  },
+  {
+    id: "glute-bridge",
+    name: "Glute Bridge",
+    emoji: "🍑",
+    category: "sete",
+    difficulty: 1,
+    description: "Ligg på ryggen, press hoftene opp og klem setemusklene",
+  },
 ];
 
 export const getByCategory = (category) =>
