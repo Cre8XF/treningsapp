@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/c/Users/ROGSOR0319/AppData/Local/**)",
+      "Read(//mnt/c/Users/ROGSOR0319/AppData/Roaming/**)",
+      "Read(//mnt/**)",
+      "Read(//usr/local/bin/**)"
+    ]
+  }
+}
