@@ -108,6 +108,28 @@ const templateWorkouts = [
       'side-plank',
     ],
   },
+  {
+    id: 'template_morning',
+    name: 'Morgenrutine',
+    emoji: '🌅',
+    description: 'Mage + overkropp – perfekt oppstart på dagen',
+    note: 'Perfekt morgenstart – mage + overkropp på under 15 min 🌅',
+    settings: {
+      warmup: 'none',
+      warmupTime: 5,
+      interval: '30/10',
+      rounds: 2,
+    },
+    exercises: [
+      'knee-crunch',
+      'lying-leg-raises',
+      'toe-touches',
+      'starfish-crunch',
+      'side-to-side-plank',
+      'elbow-to-pushup',
+      'push_up',
+    ],
+  },
 ];
 
 export default templateWorkouts;

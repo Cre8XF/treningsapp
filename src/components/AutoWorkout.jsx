@@ -34,6 +34,7 @@ function vibrate(pattern) {
 
 const INTERVAL_MAP = {
   '20/10': { work: 20, rest: 10 },
+  '30/10': { work: 30, rest: 10 },
   '30/15': { work: 30, rest: 15 },
   '40/20': { work: 40, rest: 20 },
 };

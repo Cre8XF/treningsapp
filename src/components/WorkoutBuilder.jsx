@@ -16,6 +16,7 @@ const WARMUP_TIMES = [5, 8, 10, 15];
 
 const INTERVALS = [
   { id: '20/10', label: '20 sek på', sub: '10 sek av', workSec: 20, restSec: 10 },
+  { id: '30/10', label: '30 sek på', sub: '10 sek av', workSec: 30, restSec: 10 },
   { id: '30/15', label: '30 sek på', sub: '15 sek av', workSec: 30, restSec: 15 },
   { id: '40/20', label: '40 sek på', sub: '20 sek av', workSec: 40, restSec: 20 },
 ];
@@ -442,7 +443,7 @@ function Step2Exercises({ selectedIds, onToggle, onBack, onNext }) {
 
 // ─── Step 3: Preview ──────────────────────────────────────────────────────────
 
-function Step3Preview({ config, selectedIds, onBack, onStart }) {
+function Step3Preview({ config, selectedIds, note, onBack, onStart }) {
   const [showFavInput, setShowFavInput] = useState(false);
   const [favName, setFavName] = useState('');
 
@@ -536,6 +537,20 @@ function Step3Preview({ config, selectedIds, onBack, onStart }) {
           lineHeight: 1.4,
         }}>
           {config.warning}
+        </div>
+      )}
+
+      {/* Note banner */}
+      {note && (
+        <div style={{
+          margin: '12px 16px 0',
+          padding: '10px 14px', borderRadius: '10px',
+          background: '#1a1a08', border: '1px solid #e8ff0022',
+          display: 'flex', alignItems: 'center', gap: '8px',
+        }}>
+          <span style={{ fontSize: '13px', color: '#e8ff0088', fontStyle: 'italic', lineHeight: 1.4 }}>
+            {note}
+          </span>
         </div>
       )}
 
@@ -686,6 +701,7 @@ export default function WorkoutBuilder({
   initialConfig,
   initialExerciseIds,
   initialStep = 1,
+  initialNote,
   onStart,
   onBack,
 }) {
@@ -726,6 +742,7 @@ export default function WorkoutBuilder({
         <Step3Preview
           config={config}
           selectedIds={selectedIds}
+          note={initialNote}
           onBack={() => setStep(2)}
           onStart={onStart}
         />

@@ -64,7 +64,7 @@ function getGreeting() {
 }
 
 function estimateMinutes(settings, exerciseCount) {
-  const iMap = { '20/10': { w: 20, r: 10 }, '30/15': { w: 30, r: 15 }, '40/20': { w: 40, r: 20 } };
+  const iMap = { '20/10': { w: 20, r: 10 }, '30/10': { w: 30, r: 10 }, '30/15': { w: 30, r: 15 }, '40/20': { w: 40, r: 20 } };
   const intv = iMap[settings?.interval] ?? { w: 20, r: 10 };
   const { warmup = 'none', warmupTime = 5, rounds = 1 } = settings ?? {};
   const perRound = exerciseCount * intv.w + Math.max(0, exerciseCount - 1) * intv.r;
@@ -366,7 +366,7 @@ function HomeView({ onOpen, onNew }) {
               exerciseCount={t.exercises.length}
               minutes={estimateMinutes(t.settings, t.exercises.length)}
               accent={TEMPLATE_ACCENTS[i] ?? '#e8ff00'}
-              onPress={() => onOpen(t.settings, t.exercises, 3)}
+              onPress={() => onOpen(t.settings, t.exercises, 3, t.note ?? null)}
             />
           ))}
         </div>
@@ -382,8 +382,8 @@ export default function HomeScreen({ markDayComplete }) {
   const [preset, setPreset] = useState(null);
   const [sessionData, setSessionData] = useState(null);
 
-  function handleOpen(config, exerciseIds, startAtStep = 3) {
-    setPreset({ config, exerciseIds, startAtStep });
+  function handleOpen(config, exerciseIds, startAtStep = 3, note = null) {
+    setPreset({ config, exerciseIds, startAtStep, note });
     setScreen('builder');
   }
 
@@ -422,6 +422,7 @@ export default function HomeScreen({ markDayComplete }) {
           initialConfig={preset?.config}
           initialExerciseIds={preset?.exerciseIds}
           initialStep={preset?.startAtStep ?? 1}
+          initialNote={preset?.note}
           onBack={() => setScreen('home')}
           onStart={handleStart}
         />

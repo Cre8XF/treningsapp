@@ -426,6 +426,56 @@ const exercises = [
     difficulty: 1,
     description: "Ligg på ryggen, press hoftene opp og klem setemusklene",
   },
+
+  // CORE (ekstra)
+  {
+    id: "knee-crunch",
+    name: "Knee Crunches",
+    emoji: "🦵",
+    category: "core",
+    difficulty: 1,
+    description: "Ligg på ryggen, bring knærne inn mot brystet mens du løfter overkroppen.",
+  },
+  {
+    id: "lying-leg-raises",
+    name: "Liggende Benhev",
+    emoji: "🦿",
+    category: "core",
+    difficulty: 2,
+    description: "Ligg flat, hold bena rette og løft dem opp til 90 grader, senk sakte.",
+  },
+  {
+    id: "toe-touches",
+    name: "Tå-berøringer",
+    emoji: "👆",
+    category: "core",
+    difficulty: 1,
+    description: "Ligg på ryggen med bena rett opp, nå opp mot tærne med hendene.",
+  },
+  {
+    id: "starfish-crunch",
+    name: "Starfish Crunch",
+    emoji: "⭐",
+    category: "core",
+    difficulty: 2,
+    description: "Ligg utstrakt som en sjøstjerne, bring motsatt albue og kne sammen.",
+  },
+  {
+    id: "side-to-side-plank",
+    name: "Side-til-side Planke",
+    emoji: "↔️",
+    category: "core",
+    difficulty: 2,
+    description: "Fra plankeposisjon, roter hoftene ned til siden vekselvis.",
+  },
+  {
+    id: "elbow-to-pushup",
+    name: "Albue til Push-up",
+    emoji: "💪",
+    category: "core",
+    difficulty: 3,
+    description: "Gå fra albueplanke til rett planke én arm om gangen.",
+  },
 ];
 
 export const getByCategory = (category) =>
