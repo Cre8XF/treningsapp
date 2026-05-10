@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { ChevronRight, ChevronLeft, Check, Heart, Play, X } from 'lucide-react';
 import exercises from '../data/exercises';
 import { saveWorkout } from '../hooks/useSavedWorkouts';
+import { initAudio, playExerciseStart } from '../utils/audio';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -676,7 +677,20 @@ function Step3Preview({ config, selectedIds, note, onBack, onStart }) {
           </button>
 
           <button
-            onClick={() => onStart?.({ config, exercises: selectedExercises, sequence, totalSec })}
+            onClick={() => { initAudio(); playExerciseStart(); }}
+            title="Test lyd"
+            className="active:scale-95 transition-all duration-150"
+            style={{
+              padding: '16px 11px', borderRadius: '12px',
+              border: '1.5px solid #2a2a2a', background: 'transparent',
+              color: '#555', fontSize: '15px', cursor: 'pointer', flexShrink: 0,
+            }}
+          >
+            🔔
+          </button>
+
+          <button
+            onClick={() => { initAudio(); onStart?.({ config, exercises: selectedExercises, sequence, totalSec }); }}
             className="active:scale-95 transition-all duration-150"
             style={{
               flex: 1, padding: '16px', borderRadius: '12px',

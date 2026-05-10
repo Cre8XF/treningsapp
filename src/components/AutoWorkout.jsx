@@ -1,34 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-
-// ─── Audio / haptics ──────────────────────────────────────────────────────────
-
-function playBeep(freq = 880, durationMs = 100, vol = 0.3) {
-  try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(vol, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + durationMs / 1000);
-    osc.start(ctx.currentTime);
-    osc.stop(ctx.currentTime + durationMs / 1000);
-    setTimeout(() => ctx.close(), durationMs + 200);
-  } catch {}
-}
-
-function playTripleBeep() {
-  playBeep(880, 100);
-  setTimeout(() => playBeep(880, 100), 160);
-  setTimeout(() => playBeep(880, 100), 320);
-}
-
-function playDoneSound() { playBeep(440, 500, 0.5); }
-
-function vibrate(pattern) {
-  try { navigator.vibrate?.(pattern); } catch {}
-}
+import { playExerciseStart, playRestStart, playWarning, playNewRound, playDone, vibrate } from '../utils/audio';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -89,8 +60,8 @@ function RowingPhase({ rowingSecs, label, onDone }) {
   const beepedRef = useRef(false);
 
   useEffect(() => {
-    if (timeLeft <= 0) { playDoneSound(); vibrate([500]); onDone(); return; }
-    if (timeLeft === 3 && !beepedRef.current) { beepedRef.current = true; playTripleBeep(); }
+    if (timeLeft <= 0) { onDone(); return; }
+    if (timeLeft === 3 && !beepedRef.current) { beepedRef.current = true; playWarning(); }
     const id = setTimeout(() => setTimeLeft(t => t - 1), 1000);
     return () => clearTimeout(id);
   }, [timeLeft, onDone]);
@@ -125,11 +96,11 @@ function StrengthPhase({ exercises, intervalOpt, currentRound, totalRounds, onDo
       return () => clearTimeout(id);
     }
     if (subPhase === 'work') {
-      if (exIdx >= exercises.length - 1) { playDoneSound(); vibrate([500]); onDone(); return; }
-      playBeep(880, 100); vibrate([200]);
+      if (exIdx >= exercises.length - 1) { onDone(); return; }
+      playRestStart(); vibrate([200]);
       setSubPhase('rest'); setTimeLeft(intervalOpt.rest);
     } else {
-      playBeep(880, 100); vibrate([200]);
+      playExerciseStart(); vibrate([100, 50, 100]);
       setExIdx(i => i + 1); setSubPhase('work'); setTimeLeft(intervalOpt.work);
     }
   }, [timeLeft, subPhase, exIdx, exercises.length, intervalOpt, onDone]);
@@ -294,9 +265,15 @@ export default function AutoWorkout({ exercises, settings, markDayComplete, onDo
   const startRef = useRef(Date.now());
   const todayStr = new Date().toISOString().slice(0, 10);
 
-  const handleRowingDone = useCallback(() => setPhase('strength'), []);
+  const handleRowingDone = useCallback(() => {
+    playExerciseStart();
+    vibrate([100, 50, 100]);
+    setPhase('strength');
+  }, []);
 
   const handleCooldownDone = useCallback(() => {
+    playDone();
+    vibrate([300, 100, 300]);
     setElapsedSecs(Math.floor((Date.now() - startRef.current) / 1000));
     setPhase('done');
   }, []);
@@ -308,14 +285,16 @@ export default function AutoWorkout({ exercises, settings, markDayComplete, onDo
     } else if (needsCooldown) {
       setPhase('cooldown');
     } else {
+      playDone();
+      vibrate([300, 100, 300]);
       setElapsedSecs(Math.floor((Date.now() - startRef.current) / 1000));
       setPhase('done');
     }
   }, [currentRound, rounds, needsCooldown]);
 
   const handleRoundBreakDone = useCallback(() => {
-    playBeep(880, 200);
-    vibrate([400]);
+    playNewRound();
+    vibrate([200, 100, 200, 100, 200]);
     setPhase('strength');
   }, []);
 
