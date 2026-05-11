@@ -109,6 +109,27 @@ const templateWorkouts = [
     ],
   },
   {
+    id: 'template_weights_fullbody',
+    name: 'Fullkropp med vekter 🏋️',
+    emoji: '🏋️',
+    description: '7 vektøvelser – fullkropp med manualer',
+    settings: {
+      warmup: 'none',
+      warmupTime: 5,
+      interval: '40/20',
+      rounds: 3,
+    },
+    exercises: [
+      'goblet-squat',
+      'bent-over-row',
+      'floor-press',
+      'weighted-lunge',
+      'overhead-press',
+      'romanian-deadlift',
+      'lateral-raise',
+    ],
+  },
+  {
     id: 'template_morning',
     name: 'Morgenrutine',
     emoji: '🌅',
