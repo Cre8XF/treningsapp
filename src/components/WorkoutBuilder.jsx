@@ -3,6 +3,7 @@ import { ChevronRight, ChevronLeft, Check, Heart, Play, X } from 'lucide-react';
 import exercises from '../data/exercises';
 import { saveWorkout } from '../hooks/useSavedWorkouts';
 import { initAudio, playExerciseStart } from '../utils/audio';
+import ExerciseImage from './ExerciseImage';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -32,6 +33,7 @@ const CATEGORIES = [
   { id: 'helkropp', label: 'Helkropp' },
   { id: 'sete', label: 'Sete' },
   { id: 'rygg', label: 'Rygg' },
+  { id: 'vekter', label: '🏋️ Vekter' },
 ];
 
 const BETWEEN_ROUNDS_REST_SEC = 30;
@@ -369,9 +371,7 @@ function Step2Exercises({ selectedIds, onToggle, onBack, onNext }) {
                 width: '100%',
               }}
             >
-              <span style={{ fontSize: '22px', flexShrink: 0, width: '28px', textAlign: 'center' }}>
-                {ex.emoji}
-              </span>
+              <ExerciseImage exerciseName={ex.name} emoji={ex.emoji} size="small" />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{
                   display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px',
@@ -589,9 +589,13 @@ function Step3Preview({ config, selectedIds, note, onBack, onStart }) {
                 opacity: isDim ? 0.55 : 1,
               }}
             >
-              <span style={{ fontSize: '18px', flexShrink: 0, width: '24px', textAlign: 'center' }}>
-                {item.emoji}
-              </span>
+              {item.type === 'exercise' ? (
+                <ExerciseImage exerciseName={item.label} emoji={item.emoji} size="small" />
+              ) : (
+                <span style={{ fontSize: '18px', flexShrink: 0, width: '24px', textAlign: 'center' }}>
+                  {item.emoji}
+                </span>
+              )}
               <span style={{
                 flex: 1, fontWeight: 600, fontSize: '14px',
                 color: isDim ? '#444' : '#bbb',

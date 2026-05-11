@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { playExerciseStart, playRestStart, playWarning, playNewRound, playDone, vibrate } from '../utils/audio';
+import ExerciseImage from './ExerciseImage';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -131,9 +132,9 @@ function StrengthPhase({ exercises, intervalOpt, currentRound, totalRounds, onDo
         }} />
       </div>
 
-      <div style={{ textAlign: 'center', marginTop: '8px' }}>
-        <div style={{ fontSize: '72px', lineHeight: 1 }}>{exercise.emoji}</div>
-        <h2 style={{ color: '#fff', fontSize: '30px', fontWeight: 800, letterSpacing: '1px', margin: '10px 0 6px' }}>
+      <div style={{ textAlign: 'center', marginTop: '8px', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' }}>
+        <ExerciseImage exerciseName={exercise.name} emoji={exercise.emoji} size="large" />
+        <h2 style={{ color: '#fff', fontSize: '30px', fontWeight: 800, letterSpacing: '1px', margin: '0 0 6px' }}>
           {exercise.name}
         </h2>
         <p style={{
